@@ -13,7 +13,9 @@ class KritikController extends Controller
      */
     public function index()
     {
-        //
+        $kritik = Kritik::with('user')->get();
+        return view('movies', compact('kritik'));
+
     }
 
     /**
@@ -29,7 +31,10 @@ class KritikController extends Controller
      */
     public function store(StoreKritikRequest $request)
     {
-        //
+        $data = $request->all();
+        $data['film_id'] = $request->input('film_id');
+        Kritik::create($data);
+        return redirect()->back();
     }
 
     /**
@@ -37,30 +42,39 @@ class KritikController extends Controller
      */
     public function show(Kritik $kritik)
     {
-        //
+        $film = $kritik->film;
+        return view('components.showKomentar', compact('kritik', 'film'));
     }
 
     /**
      * Show the form for editing the specified resource.
      */
-    public function edit(Kritik $kritik)
+    public function edit($id)
     {
-        //
+        $kritik = Kritik::with('user')->findOrFail($id);
+        return view('components.editKomentar', compact('kritik'));
     }
 
     /**
      * Update the specified resource in storage.
      */
-    public function update(UpdateKritikRequest $request, Kritik $kritik)
+    public function update(UpdateKritikRequest $request, $id)
     {
-        //
+        $kritik = Kritik::findOrFail($id);
+        $kritik->comment = $request->input('comment');
+        $kritik->rating = $request->input('rating');
+        $kritik->save();
+        return redirect()->route('movies.show', ['film' => $kritik->film_id]);
     }
 
     /**
      * Remove the specified resource from storage.
      */
-    public function destroy(Kritik $kritik)
+    public function destroy($id)
     {
-        //
+        $kritik = Kritik::findOrFail($id);
+        $film_id = $kritik->film_id;
+        $kritik -> delete();
+        return redirect()->route('movies.show', ['film' => $film_id ]);
     }
 }

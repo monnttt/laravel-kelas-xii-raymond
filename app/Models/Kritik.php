@@ -17,4 +17,16 @@ class Kritik extends Model
         'film_id',
         'user_id',
     ];
+
+
+    //tambah relasi
+    public function user()
+    {
+        return $this->belongsTo(User::class, 'user_id'); //ambil data user id
+    }
+
+    public function film()
+    {
+        return $this->belongsTo(Film::class, 'film_id'); //ambil data film id
+    }
 }
